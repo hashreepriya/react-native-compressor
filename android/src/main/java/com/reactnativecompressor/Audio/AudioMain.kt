@@ -11,7 +11,7 @@ class AudioMain(private val reactContext: ReactApplicationContext) {
     promise: Promise) {
     try {
 
-      AudioCompressor.CompressAudio(fileUrl,optionMap,reactContext,promise)
+     promise.resolve(fileUrl)
     } catch (ex: Exception) {
       promise.reject(ex)
     }
