@@ -6,12 +6,9 @@ import android.net.Uri
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
-import com.reactnativecompressor.Utils.MediaCache
 import com.reactnativecompressor.Utils.Utils
 import com.reactnativecompressor.Utils.Utils.addLog
-import java.io.File
 import java.io.IOException
-import java.nio.ByteBuffer
 
 class AudioCompressor {
 
@@ -59,8 +56,10 @@ class AudioCompressor {
             extractor.selectTrack(trackIndex)
 
             val format = extractor.getTrackFormat(trackIndex)
-            val sampleRate = optionMap.getInt("samplerate").takeIf { it > 0 } ?: format.getInteger(MediaFormat.KEY_SAMPLE_RATE)
-            val channelCount = optionMap.getInt("channels").takeIf { it > 0 } ?: format.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
+            val sampleRate = optionMap.getInt("samplerate").takeIf { it > 0 }
+                ?: format.getInteger(MediaFormat.KEY_SAMPLE_RATE)
+            val channelCount = optionMap.getInt("channels").takeIf { it > 0 }
+                ?: format.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
             val bitrate = optionMap.getInt("bitrate").takeIf { it > 0 } ?: 128_000
 
             val mediaFormat = MediaFormat.createAudioFormat(
@@ -88,10 +87,16 @@ class AudioCompressor {
                     val sampleSize = extractor.readSampleData(inputBuffer, 0)
 
                     if (sampleSize < 0) {
-                        codec.queueInputBuffer(inputBufferIndex, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
+                        codec.queueInputBuffer(
+                            inputBufferIndex, 0, 0, 0,
+                            MediaCodec.BUFFER_FLAG_END_OF_STREAM
+                        )
                         isEOS = true
                     } else {
-                        codec.queueInputBuffer(inputBufferIndex, 0, sampleSize, extractor.sampleTime, 0)
+                        codec.queueInputBuffer(
+                            inputBufferIndex, 0, sampleSize,
+                            extractor.sampleTime, 0
+                        )
                         extractor.advance()
                     }
                 }
